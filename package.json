@@ -1,0 +1,17 @@
+{
+  "name": "tennis-finder",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0"
+  },
+  "packageManager": "pnpm@9.14.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}

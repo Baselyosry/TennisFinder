@@ -1,0 +1,37 @@
+# TennisFinder Project Rules
+
+## Tech Stack (FHTC)
+- **Monorepo:** Turborepo + pnpm workspaces
+- **Backend:** Convex (packages/backend)
+- **Web:** React 19 + TanStack Start/Router + Tailwind 4 + Shadcn/UI (apps/web)
+- **Mobile:** Expo + React Native + NativeWind (apps/mobile)
+- **Auth:** Better Auth with Convex Adapter
+
+## General Rules
+- Always use `pnpm` for package management.
+- When installing dependencies, specify the workspace: `pnpm add x --filter web`.
+- Never use `useEffect` for data fetching. Use Convex `useQuery`.
+- Use `lucide-react` for icons.
+
+## Backend Rules (Convex)
+- Define schema in `packages/backend/convex/schema.ts`.
+- Use `v` from "convex/values" for validation.
+- All mutations must check `ctx.auth.getUserIdentity()`.
+- Use `internalMutation` for scheduled jobs or inter-service calls.
+
+## Frontend Rules (Web - Court Owner Dashboard)
+- This is a B2B dashboard. Focus on Density and Data Tables.
+- Use TanStack Table for lists.
+- Use Recharts for charts.
+- Layout: Sidebar navigation with a top header.
+
+## Mobile Rules (Expo - Player App)
+- This is a B2C app. Focus on Touch targets and Speed.
+- Use `expo-router` for navigation (file-based in apps/mobile/app).
+- Use `FlashList` for long lists (matches, courts).
+- Styling: Use NativeWind (Tailwind classes).
+
+## AI Integration Rules
+- AI logic lives in Python microservices.
+- Convex calls AI via `actions`.
+- Never put API keys in frontend code. Use `process.env`.

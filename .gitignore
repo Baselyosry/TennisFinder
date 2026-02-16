@@ -1,0 +1,50 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+dist
+.next
+out
+*.tsbuildinfo
+.expo
+web-build
+
+# Turbo
+.turbo
+
+# Convex
+convex/_generated
+packages/backend/convex/_generated
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea
+*.swp
+*.swo
+*~
+
+# Testing
+coverage
+.nyc_output
+
+# Vite
+*.local
+
+# Misc
+.cache
+*.patch
