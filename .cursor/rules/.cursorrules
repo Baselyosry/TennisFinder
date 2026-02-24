@@ -1,6 +1,6 @@
 # TennisFinder Project Rules
 
-## Tech Stack (FHTC)
+## Tech Stack
 - **Monorepo:** Turborepo + pnpm workspaces
 - **Backend:** Convex (packages/backend)
 - **Web:** React 19 + TanStack Start/Router + Tailwind 4 + Shadcn/UI (apps/web)
