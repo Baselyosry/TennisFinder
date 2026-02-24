@@ -36,9 +36,15 @@ importers:
 
   apps/web:
     dependencies:
+      '@convex-dev/auth':
+        specifier: ^0.0.90
+        version: 0.0.90(@auth/core@0.37.4)(convex@1.31.7(react@19.2.4))(react@19.2.4)
       '@tanstack/react-router':
         specifier: ^1.90.0
         version: 1.160.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      convex:
+        specifier: ^1.31.7
+        version: 1.31.7(react@19.2.4)
       react:
         specifier: ^19.0.0
         version: 19.2.4
@@ -1187,7 +1193,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {node: '>=0.10.0'}
+    engines: {'0': node >=0.10.0}
 
   '@expo/cli@0.22.28':
     resolution: {integrity: sha512-lvt72KNitGuixYD2l3SZmRKVu2G4zJpmg5V7WfUBNpmUU5oODBw/6qmiJ6kSLAlfDozscUk+BBGknBBzxUrwrA==}

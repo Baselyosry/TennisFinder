@@ -9,7 +9,9 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@convex-dev/auth": "^0.0.90",
     "@tanstack/react-router": "^1.90.0",
+    "convex": "^1.31.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwindcss": "^4.0.0"
