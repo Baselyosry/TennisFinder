@@ -36,9 +36,15 @@ importers:
 
   apps/web:
     dependencies:
+      '@convex-dev/auth':
+        specifier: ^0.0.90
+        version: 0.0.90(@auth/core@0.37.4)(convex@1.31.7(react@19.2.4))(react@19.2.4)
       '@tanstack/react-router':
         specifier: ^1.90.0
         version: 1.160.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      convex:
+        specifier: ^1.31.7
+        version: 1.31.7(react@19.2.4)
       react:
         specifier: ^19.0.0
         version: 19.2.4
@@ -62,7 +68,7 @@ importers:
         specifier: ^0.0.90
         version: 0.0.90(@auth/core@0.37.4)(convex@1.31.7(react@19.2.4))(react@19.2.4)
       convex:
-        specifier: ^1.18.0
+        specifier: ^1.31.7
         version: 1.31.7(react@19.2.4)
 
   packages/config:
