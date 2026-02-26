@@ -137,7 +137,9 @@ export default defineSchema({
     images: v.optional(v.array(v.id("_storage"))), // Utilizing Convex File Storage
     status: v.union(v.literal("Available"), v.literal("Sold")),
     createdAt: v.number(),
-  }).index("by_owner", ["ownerId"]),
+  })
+    .index("by_owner", ["ownerId"])
+    .index("by_status_and_createdAt", ["status", "createdAt"]),
 
   reviews: defineTable({
     reviewerId: v.id("users"),
