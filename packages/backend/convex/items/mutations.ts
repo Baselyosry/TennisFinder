@@ -32,6 +32,8 @@ export const create = mutation({
     age_months: v.number(),
     original_price: v.number(),
     user_price: v.number(),
+    predicted_sold_price: v.optional(v.number()),
+    ai_label: v.optional(v.string()),
     images: v.optional(v.array(v.id("_storage"))),
   },
   returns: v.id("items"),
@@ -41,23 +43,13 @@ export const create = mutation({
       throw new Error("Unauthorized");
     }
     const ownerId = identity.subject as Id<"users">;
-    const now = Date.now();
-    return await ctx.db.insert("items", {
+    const itemId = await ctx.db.insert("items", {
       ownerId,
-      title: args.title,
-      description: args.description,
-      category: args.category,
-      condition: args.condition,
-      brand: args.brand,
-      model: args.model,
-      flaw: args.flaw,
-      age_months: args.age_months,
-      original_price: args.original_price,
-      user_price: args.user_price,
-      images: args.images,
+      ...args,
       status: "Available",
-      createdAt: now,
+      createdAt: Date.now(),
     });
+    return itemId;
   },
 });
 
