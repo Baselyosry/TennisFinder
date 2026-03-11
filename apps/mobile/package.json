@@ -2,19 +2,22 @@
   "name": "mobile",
   "version": "0.0.0",
   "private": true,
+  "main": "expo-router/entry",
   "scripts": {
     "dev": "expo start",
     "build": "expo export",
     "lint": "expo lint"
   },
   "dependencies": {
-    "expo": "~52.0.0",
-    "expo-router": "~4.0.0",
-    "react": "18.3.1",
-    "react-native": "0.76.5"
+    "@expo/metro-runtime": "~6.1.2",
+    "expo": "~54.0.0",
+    "expo-linking": "~8.0.11",
+    "expo-router": "~6.0.23",
+    "react": "19.1.0",
+    "react-native": "0.81.5"
   },
   "devDependencies": {
-    "@types/react": "~19.1.10",
+    "@types/react": "~19.1.17",
     "typescript": "~5.9.2"
   }
 }

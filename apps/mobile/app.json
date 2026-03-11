@@ -3,6 +3,9 @@
     "name": "TennisFinder",
     "slug": "tennis-finder",
     "version": "1.0.0",
-    "scheme": "tennis-finder"
+    "scheme": "tennis-finder",
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
