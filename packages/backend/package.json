@@ -1,5 +1,5 @@
 {
-  "name": "@fhtc/backend",
+  "name": "@tennisfinder/backend",
   "version": "0.0.0",
   "private": true,
   "scripts": {

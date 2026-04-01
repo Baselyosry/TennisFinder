@@ -11,7 +11,7 @@ B2B Web Application (Court Owners): A "Command Center" dashboard for facility ma
 Both applications share a single, real-time serverless database, ensuring that an action taken by a player on mobile instantly reflects on the owner's web dashboard without manual refresh.
 
 2. Technical Stack
-The project utilizes the FHTC (Fast, High-performance, TypeScript, Convex) stack within a strict Monorepo environment, supplemented by Python for Machine Learning.
+The project utilizes the tennisfinder (Fast, High-performance, TypeScript, Convex) stack within a strict Monorepo environment, supplemented by Python for Machine Learning.
 
 Monorepo Tooling:
 

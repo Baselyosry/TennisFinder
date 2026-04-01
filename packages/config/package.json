@@ -1,5 +1,5 @@
 {
-  "name": "@fhtc/config",
+  "name": "@tennisfinder/config",
   "version": "0.0.0",
   "private": true,
   "devDependencies": {
