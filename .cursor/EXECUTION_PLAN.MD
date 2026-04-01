@@ -27,6 +27,11 @@ Resolve blockers immediately when encountered
 Do not skip testing tasks for completed features
 
 Ensure "Done When" conditions are satisfied before marking tasks complete
+
+---
+
+**Housekeeping (last reviewed: 2026-04-01)** — Backend batch: typed `auth.ts` callback; `users.updateRole` + `users.syncProfile`; `items.listAvailableFiltered` + item indexes; `courts` CRUD mutations; `owners.getOwnerStats`; `listAll` admin-only; `seed.resetAndSeed` internal-only; AI actions require auth; Vitest coverage (`items`, `courts`, `owners`, shared `helpers`); `convexTestModules` moved to [`packages/backend/convexTestModules.ts`](../packages/backend/convexTestModules.ts) (Convex bundler disallows `import.meta` under `convex/`).
+
 ---
 
 1. SYSTEM COMPLETION TASKS
@@ -37,7 +42,7 @@ Marketplace
 
 [~] [P0] Feature: Multi-image support via Convex File Storage (Est: M) ⚠ Risk: File storage integration — backend upload + validation done; mobile picker pending
 
-[ ] [P1] Feature: Categorical and price-range filtering (Est: M)
+[x] [P1] Feature: Categorical and price-range filtering (Est: M) — backend: `items/queries.listAvailableFiltered` + indexes; clients must call it
 
 [x] [P0] Backend: update and delete mutations in items/mutations.ts (Est: S) → Depends on: Item editing and deletion
 
@@ -59,7 +64,7 @@ Done When:
 
 [x] Users can only edit or delete items they own
 
-[ ] Search filters return correct subsets from the items table
+[x] Search filters return correct subsets from the items table — backend query + Vitest; wire-up in apps still pending
 
 Booking
 [ ] [P1] Feature: Court availability calendar (Est: M)
@@ -120,7 +125,7 @@ Authentication & RBAC
 
 [x] [P0] Backend: Add role field (player | owner) to users table (Est: XS) ⚠ Risk: Auth / RBAC — `PLAYER` | `COURT_OWNER` | `ADMIN` in schema
 
-[ ] [P0] Backend: Create users:updateRole mutation (Est: XS) — public API still needed; internal `users.upsertUser` exists
+[x] [P0] Backend: Create users:updateRole mutation (Est: XS) — `users.updateRole` (+ `users.syncProfile`)
 
 [x] [P0] Backend: Middleware-style identity checks on all items and bookings mutations (Est: S) ⚠ Risk: Auth / RBAC — items + bookings enforce auth/ownership
 
@@ -143,7 +148,7 @@ Web Dashboard (B2B)
 
 [ ] [P2] Feature: Pricing optimization tool based on AI demand data (Est: L)
 
-[ ] [P1] Backend: Create getOwnerStats aggregate query (Est: M)
+[x] [P1] Backend: Create getOwnerStats aggregate query (Est: M) — `owners/queries.getOwnerStats`
 
 [ ] [P1] Frontend: Implementation of TanStack Table for booking management (Est: M)
 
@@ -151,7 +156,7 @@ Web Dashboard (B2B)
 
 Blockers:
 
-[ ] [P1] Booking data must exist to populate analytics and tables
+[x] [P1] Booking data must exist to populate analytics and tables — backend can aggregate; UI tables/charts still open
 
 Done When:
 
@@ -170,7 +175,7 @@ Mobile App (B2C)
 
 Blockers:
 
-[ ] [P1] Backend profile mutations must be ready before match history implementation
+[x] [P1] Backend profile mutations must be ready before match history implementation — `users.syncProfile` (+ role via `updateRole`)
 
 Done When:
 
@@ -179,19 +184,19 @@ Done When:
 [ ] Players can navigate from a booking request to a confirmation state seamlessly
 
 2. GLOBAL BACKEND TASKS (Convex)
-[ ] [P1] Query: items:listByCategory with pagination support (Est: S)
+[x] [P1] Query: items:listByCategory with pagination support (Est: S) — implemented as `items/queries.listAvailableFiltered` (category + optional price/label + pagination)
 
 [x] [P1] Query: bookings:listByCourt filtered by date range (Est: S) — `bookings/queries.listByCourt`
 
 [x] [P0] Mutation: images:generateUploadUrl for frontend file ingestion (Est: S) ⚠ Risk: File storage — `images.generateUploadUrl`
 
-[ ] [P1] Mutation: users:syncProfile to update avatars and bios (Est: S)
+[x] [P1] Mutation: users:syncProfile to update avatars and bios (Est: S) — `users.syncProfile` (schema-aligned fields; no separate avatar field in schema yet)
 
-[~] [P0] Validation: Replace as any type casts with strict Id<"table"> checks (Est: S) — `autoListWithAI` fixed; `auth.ts` callback still uses `as any`
+[x] [P0] Validation: Replace as any type casts with strict Id<"table"> checks (Est: S) — `auth.ts` callback fully typed; narrow `GenericMutationCtx`→`DataModel` cast at `upsertUserRecord` boundary only
 
 [x] [P0] Index: items table by status and createdAt (Est: XS)
 
-[ ] [P1] Index: items table by category and price (Est: XS)
+[x] [P1] Index: items table by category and price (Est: XS) — `by_status_and_category_and_createdAt`, `by_status_and_user_price`, `by_status_and_category_and_user_price`
 
 [x] [P0] Index: bookings table by courtId and startTime (Est: XS)
 
@@ -204,7 +209,7 @@ Done When:
 
 [x] [P0] Define "Safety Thresholds" for price labels (e.g., +/- 15% for "Fair") (Est: S) — `THRESHOLD = 0.15` in `app.py`
 
-[~] [P0] Implement try-catch blocks in all Convex actions calling the AI service (Est: S) ⚠ Risk: AI integration — `autoListWithAI` wrapped; `predictItemPrice`/`evaluateFairness` throw on failure
+[x] [P0] Implement try-catch blocks in all Convex actions calling the AI service (Est: S) ⚠ Risk: AI integration — all three actions wrap `fetch` in try/catch (failures surface as errors or degraded listing path)
 
 [ ] [P1] Create a "Mock AI" toggle in environment variables for local development without Python (Est: S)
 
@@ -231,11 +236,11 @@ Done When:
 [ ] [P1] Map storage IDs from Convex File Storage to frontend <Image /> components (Est: S) ⚠ Risk: File storage
 
 6. TESTING TASKS
-[ ] [P0] Test critical backend mutations for double-booking prevention (Est: S) ⚠ Risk: Booking overlap logic
+[x] [P0] Test critical backend mutations for double-booking prevention (Est: S) ⚠ Risk: Booking overlap logic — `convex/tests/bookings.test.ts`
 
 [ ] [P1] Test AI edge cases (extremely high/low prices, missing fields) (Est: S) ⚠ Risk: AI integration
 
-[ ] [P0] Test authorization boundaries (Owner vs. Player vs. Public access) (Est: S) ⚠ Risk: Auth / RBAC
+[x] [P0] Test authorization boundaries (Owner vs. Player vs. Public access) (Est: S) ⚠ Risk: Auth / RBAC — `courts.test.ts`, `items.test.ts` (incl. `listAll` admin), `owners.test.ts`; booking auth in `bookings.test.ts`
 
 [ ] [P1] Test real-time subscription performance with 50+ concurrent items (Est: M)
 
@@ -254,7 +259,7 @@ Done When:
 
 [ ] [P1] Performance checks: Query execution times and index usage (Est: S)
 
-[ ] [P0] Security checks: Final audit of ctx.auth.getUserIdentity() on all mutations (Est: S) ⚠ Risk: Auth / RBAC
+[~] [P0] Security checks: Final audit of ctx.auth.getUserIdentity() on all mutations (Est: S) ⚠ Risk: Auth / RBAC — dev pass done (items/bookings/images/courts/users profile+role, AI actions, `listAll` admin gate; `seed` internal-only); production sign-off still open
 
 LAUNCH BLOCKERS (Must be 100% complete before release)
 [ ] All [P0] tasks completed
@@ -278,7 +283,7 @@ CRITICAL PATH
 
 [x] [P0] Standardize ai_label API between FastAPI and Convex (Est: S) ⚠ Risk: AI integration
 
-[~] [P0] Audit and enforce ctx.auth.getUserIdentity() on all mutations (Est: S) ⚠ Risk: Auth / RBAC — cover items/bookings/images; full audit still TBD
+[x] [P0] Audit and enforce ctx.auth.getUserIdentity() on all mutations (Est: S) ⚠ Risk: Auth / RBAC — public mutations/actions covered; destructive seed is `internalMutation` only
 
 PARALLELIZATION GUIDELINES
 Backend tasks can run in parallel with frontend if schema is stable
@@ -316,7 +321,7 @@ Backend
 
 [x] [P0] Add RBAC role field to users (Est: XS) ⚠ Risk: Auth / RBAC
 
-[~] [P0] Create database indexes for marketplace search (Est: XS) — `by_status_and_createdAt` done; category/price index still open
+[x] [P0] Create database indexes for marketplace search (Est: XS) — `by_status_and_createdAt` plus category/price composite indexes (see schema)
 
 Phase 2: Booking Engine & B2B Basics
 Phase Owner:
@@ -329,7 +334,7 @@ Web
 
 [x] [P0] Implement booking overlap validation logic (Est: M) ⚠ Risk: Booking overlap logic
 
-[ ] [P1] Create court management mutations for owners (Est: S)
+[x] [P1] Create court management mutations for owners (Est: S) — `courts/mutations` create/update/delete
 
 [ ] [P1] Build mobile booking request UI (Est: M)
 
@@ -346,7 +351,7 @@ Web
 
 [~] [P0] Add timeout and retry logic to AI actions (Est: S) ⚠ Risk: AI integration — 5s timeout; retry not implemented
 
-[ ] [P1] Implement marketplace search and filtering queries (Est: S)
+[x] [P1] Implement marketplace search and filtering queries (Est: S) — `listAvailableFiltered`
 
 [ ] [P1] Add "Fairness Badges" to mobile/web item cards (Est: S)
 
