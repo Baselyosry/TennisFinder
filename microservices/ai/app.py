@@ -17,7 +17,7 @@ class PredictRequest(BaseModel):
     age_months: float
     original_price: float
      
-THRESHOLD = 0.10  # 10%    
+THRESHOLD = 0.15  # 15% — aligned with TennisFinder fairness bands
 class LabelRequest(BaseModel):
     predicted_sold_price: float
     user_price: float
@@ -71,10 +71,12 @@ def label(req: LabelRequest):
         else:
             status = "fair"
 
+        # `status` and `label` are identical for Convex clients (legacy + new).
         return {
             "label": status,
-            "Recommended Price Range": recommendedRang 
-            
+            "status": status,
+            "recommendedPriceRange": recommendedRang,
+            "Recommended Price Range": recommendedRang,
         }
     except HTTPException:
         raise
