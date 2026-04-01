@@ -1,6 +1,7 @@
 import { mutation } from "../_generated/server";
 import { v } from "convex/values";
 import type { Id } from "../_generated/dataModel";
+import { assertStorageIdsAreImages } from "../images";
 
 const itemPatchValidator = v.object({
   title: v.optional(v.string()),
@@ -43,6 +44,9 @@ export const create = mutation({
       throw new Error("Unauthorized");
     }
     const ownerId = identity.subject as Id<"users">;
+    if (args.images?.length) {
+      await assertStorageIdsAreImages(ctx, args.images);
+    }
     const itemId = await ctx.db.insert("items", {
       ownerId,
       ...args,
@@ -74,6 +78,9 @@ export const update = mutation({
     const ownerId = identity.subject as Id<"users">;
     if (item.ownerId !== ownerId) {
       throw new Error("Unauthorized: you are not the owner of this item");
+    }
+    if (patch.images?.length) {
+      await assertStorageIdsAreImages(ctx, patch.images);
     }
     await ctx.db.patch(itemId, patch);
     return null;
