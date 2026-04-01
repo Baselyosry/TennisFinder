@@ -1,3 +1,7 @@
+import {
+  paginationOptsValidator,
+  paginationResultValidator,
+} from "convex/server";
 import { query } from "../_generated/server";
 import { v } from "convex/values";
 import type { Id } from "../_generated/dataModel";
@@ -67,7 +71,112 @@ export const listAll = query({
   args: {},
   returns: v.array(itemDocValidator),
   handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+    const user = await ctx.db.get(identity.subject as Id<"users">);
+    if (!user || user.role !== "ADMIN") {
+      throw new Error("Forbidden: admin only");
+    }
     return await ctx.db.query("items").order("desc").collect();
+  },
+});
+
+/**
+ * Paginated "Available" listings with optional category, price bounds, and AI label.
+ * Uses indexes; when `aiLabel` is set, applies an additional equality filter on `ai_label`.
+ */
+export const listAvailableFiltered = query({
+  args: {
+    paginationOpts: paginationOptsValidator,
+    category: v.optional(v.string()),
+    minPrice: v.optional(v.number()),
+    maxPrice: v.optional(v.number()),
+    aiLabel: v.optional(v.string()),
+  },
+  returns: paginationResultValidator(itemDocValidator),
+  handler: async (ctx, args) => {
+    const { paginationOpts, category, minPrice, maxPrice, aiLabel } = args;
+
+    if (
+      minPrice !== undefined &&
+      maxPrice !== undefined &&
+      minPrice > maxPrice
+    ) {
+      throw new Error("minPrice cannot exceed maxPrice");
+    }
+
+    const hasCat = category !== undefined && category.length > 0;
+    const hasMin = minPrice !== undefined;
+    const hasMax = maxPrice !== undefined;
+    const hasLabel = aiLabel !== undefined && aiLabel.length > 0;
+
+    if (hasCat && (hasMin || hasMax)) {
+      let q = ctx.db
+        .query("items")
+        .withIndex("by_status_and_category_and_user_price", (iq) => {
+          const base = iq.eq("status", "Available").eq("category", category!);
+          if (hasMin) {
+            return base.gte("user_price", minPrice!);
+          }
+          if (hasMax) {
+            return base.lte("user_price", maxPrice!);
+          }
+          return base;
+        });
+      if (hasMax && hasMin) {
+        q = q.filter((fq) => fq.lte(fq.field("user_price"), maxPrice!));
+      }
+      if (hasLabel) {
+        q = q.filter((fq) => fq.eq(fq.field("ai_label"), aiLabel!));
+      }
+      return await q.order("asc").paginate(paginationOpts);
+    }
+
+    if (hasCat) {
+      let q = ctx.db
+        .query("items")
+        .withIndex("by_status_and_category_and_createdAt", (iq) =>
+          iq.eq("status", "Available").eq("category", category!),
+        );
+      if (hasLabel) {
+        q = q.filter((fq) => fq.eq(fq.field("ai_label"), aiLabel!));
+      }
+      return await q.order("desc").paginate(paginationOpts);
+    }
+
+    if (hasMin || hasMax) {
+      let q = ctx.db
+        .query("items")
+        .withIndex("by_status_and_user_price", (iq) => {
+          const base = iq.eq("status", "Available");
+          if (hasMin) {
+            return base.gte("user_price", minPrice!);
+          }
+          if (hasMax) {
+            return base.lte("user_price", maxPrice!);
+          }
+          return base;
+        });
+      if (hasMax && hasMin) {
+        q = q.filter((fq) => fq.lte(fq.field("user_price"), maxPrice!));
+      }
+      if (hasLabel) {
+        q = q.filter((fq) => fq.eq(fq.field("ai_label"), aiLabel!));
+      }
+      return await q.order("asc").paginate(paginationOpts);
+    }
+
+    let q = ctx.db
+      .query("items")
+      .withIndex("by_status_and_createdAt", (iq) =>
+        iq.eq("status", "Available"),
+      );
+    if (hasLabel) {
+      q = q.filter((fq) => fq.eq(fq.field("ai_label"), aiLabel!));
+    }
+    return await q.order("desc").paginate(paginationOpts);
   },
 });
 
