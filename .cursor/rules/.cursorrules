@@ -1,11 +1,41 @@
 # TennisFinder Project Rules
 
+## Context Awareness
+- **High-Level Intent:** Refer to `.cursor/CURSOR_CONTEXT.md` for project goals and "The Lane Rule".
+- **Technical Logic:** Refer to `.cursor/SYSTEM_BLUEPRINT.md` for data flow, variable naming, and dependency maps.
+
 ## Tech Stack
 - **Monorepo:** Turborepo + pnpm workspaces
 - **Backend:** Convex (packages/backend)
 - **Web:** React 19 + TanStack Start/Router + Tailwind 4 + Shadcn/UI (apps/web)
 - **Mobile:** Expo + React Native + NativeWind (apps/mobile)
 - **Auth:** Better Auth with Convex Adapter
+
+# TennisFinder Global Cursor Rules
+
+## 1. Monorepo Lane Enforcement (CRITICAL)
+- **Backend Lane:** When editing `packages/backend/convex/`, DO NOT modify `apps/web` or `apps/mobile` unless explicitly requested.
+- **Dependency Rule:** All backend logic must be exported through the generated `api` object. Never import internal backend files directly into apps.
+- **Package Management:** Always use `pnpm add <pkg> --filter <workspace>`. Never run `npm install`.
+
+## 2. Convex Mutation Safety & Identity
+- **Ownership Check:** Every mutation that modifies or deletes data MUST verify `ctx.auth.getUserIdentity()`. 
+- **The Rule:** "If a table has an `ownerId`, the mutation must throw an error if `identity.subject !== doc.ownerId`."
+- **Logic Isolation:** Mutations MUST NOT perform `fetch()` calls or interact with external APIs. All side effects must happen in Actions.
+
+## 3. Type Safety & Return Values
+- **Explicit Returns:** All Convex actions and mutations must have explicit TypeScript return type annotations (e.g., `handler: async (ctx, args): Promise<{ itemId: Id<"items"> }>`).
+- **Idempotency:** Mutations should be designed to handle being called multiple times without creating duplicate state (e.g., check for existence before `db.insert`).
+
+## 4. AI-Python Bridge Guardrails
+- **Env Validation:** Any Action calling the Python AI service MUST check for `process.env.AI_API_URL` and handle its absence gracefully using the "Safety Switch" (try-catch) pattern.
+- **Timing:** AI actions should be optimized for a <2s response time to prevent frontend timeouts.
+
+## 5. Automated Pre-Flight Checklist
+Whenever a file in `packages/backend/convex/` is modified, the agent must verify:
+1. Did I run `npx convex dev` if I touched `schema.ts`?
+2. Are all number fields stored as Unix timestamps (`v.number()`)?
+3. Did I use `as any`? If so, is there a comment explaining why?
 
 ## General Rules
 - Always use `pnpm` for package management.
