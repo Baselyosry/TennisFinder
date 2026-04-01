@@ -3,7 +3,8 @@ import { describe, expect, it } from "vitest";
 import { api } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import schema from "../schema";
-import { convexTestModules } from "../testModules";
+import { convexTestModules } from "../../convexTestModules";
+import { expectConvexErrorCode } from "./helpers";
 
 const MS_PER_HOUR = 60 * 60 * 1000;
 
@@ -18,17 +19,6 @@ type Seed = {
   playerBId: Id<"users">;
   courtId: Id<"courts">;
 };
-
-/** convex-test may surface ConvexError.data as a serialized JSON string. */
-function expectConvexErrorCode(err: unknown, code: string): void {
-  expect(err).toMatchObject({ name: "ConvexError" });
-  const raw = (err as { data: unknown }).data;
-  const payload =
-    typeof raw === "string"
-      ? (JSON.parse(raw) as { code?: string })
-      : (raw as { code?: string });
-  expect(payload.code).toBe(code);
-}
 
 async function seedCourtAndUsers(
   t: ReturnType<typeof convexTest>,
