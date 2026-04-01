@@ -45,7 +45,11 @@ export const predictItemPrice = action({
     original_price: v.number(),
   },
   returns: v.number(),
-  handler: async (_ctx, args) => {
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
     const baseUrl = env.AI_API_URL;
     if (!baseUrl) {
       throw new Error("AI_API_URL is not set in Convex Dashboard");
@@ -90,7 +94,11 @@ export const evaluateFairness = action({
     label: v.string(),
     recommendedPriceRange: v.optional(v.string()),
   }),
-  handler: async (_ctx, args) => {
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
     const baseUrl = env.AI_API_URL;
     if (!baseUrl) {
       throw new Error("AI_API_URL is not set in Convex Dashboard");
@@ -168,6 +176,10 @@ export const autoListWithAI = action({
     ai_label: string;
     success: boolean;
   }> => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
     const baseUrl = env.AI_API_URL;
 
     let predicted_sold_price = 0;
