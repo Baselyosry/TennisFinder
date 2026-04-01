@@ -1,8 +1,12 @@
-import { internalMutation, mutation } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 
-export const resetAndSeed = mutation({
+/**
+ * Wipes courts and re-seeds demo data. Internal-only — not callable from clients.
+ */
+export const resetAndSeed = internalMutation({
   args: {},
+  returns: v.string(),
   handler: async (ctx) => {
     // 1. Clean up existing data (Optional - use with caution)
     const existingCourts = await ctx.db.query("courts").collect();

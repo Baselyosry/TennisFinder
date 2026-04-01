@@ -139,7 +139,18 @@ export default defineSchema({
     createdAt: v.number(),
   })
     .index("by_owner", ["ownerId"])
-    .index("by_status_and_createdAt", ["status", "createdAt"]),
+    .index("by_status_and_createdAt", ["status", "createdAt"])
+    .index("by_status_and_category_and_createdAt", [
+      "status",
+      "category",
+      "createdAt",
+    ])
+    .index("by_status_and_user_price", ["status", "user_price"])
+    .index("by_status_and_category_and_user_price", [
+      "status",
+      "category",
+      "user_price",
+    ]),
 
   reviews: defineTable({
     reviewerId: v.id("users"),
